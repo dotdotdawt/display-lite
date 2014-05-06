@@ -1,5 +1,5 @@
 """
-control.py 2
+control.py
 """
 
 # -------------------------------------- --------------------------------------
@@ -18,17 +18,11 @@ import display
 
 # -------------------------------------- --------------------------------------
 class Control(object):
-    """
-    ----------------------------------- --------------------------------------
-    This is the object that holds the main loop and interprets user events.
-
-    _____Notable things_____
-    - self.state is a State() object... If self.state.input=False then all
-        inputs will be overriden. This is the same for 'main' State().
-
-    - 
-    ----------------------------------- --------------------------------------
-    """
+    # This is the object that holds the main loop and interprets user events.
+    #
+    # _____Notable things_____
+    # - self.state is a State() object... If self.state.input=False then all
+    #     inputs will be overriden. This is the same for 'main' State().
     def __init__(self, settings):
         self.debug = settings['debug']
         self.temp_state = settings['state']
@@ -105,46 +99,40 @@ class Control(object):
             }
         self.input_keys = [self.pg_dir_keys, self.pg_qwer_keys, self.pg_esc_keys]
 
-    # -------------------------------------- --------------------------------------
-    # Main Loop
-    # zomg, like really importante
-    # -------------------------------------- --------------------------------------
     def main_loop(self):
         
         while self.on:
-            """Independent of state, these need to run."""
+            # Independent of state, these need to run.
             self.evaluate_state()
             self.handle_events()
 
-            """In the overworld we need to check to see if a battle needs to happen
-            and we need to apply movement updates to the Player()"""
+            # In the overworld we need to check to see if a battle needs to happen
+            # we need to apply movement updates to the Player()
             if self.world:
                 if self.state.input and self.moving:
                     self.world_movement()
                     if self.state.moving:
                         self.random_engage()                
 
-            """Check if the battle is over every frame."""
+            # Check if the battle is over every frame.
             if self.battle:
                 self.check_battle_over()
 
-            """Let Display() do it's thang"""
+            # Let Display() do it's thang
             self.display.update()
             self.display.fps_clock.tick(self.display.fps)
             pygame.display.update()
 
-        """Goodbye."""
+        # Goodbye.
         while not self.on:
             pygame.quit()
             sys.exit()
 
-    # -------------------------------------- --------------------------------------
-    # State evaluation!!
-    # -------------------------------------- --------------------------------------  
+    # State functions  
     def evaluate_state(self):
-        """All of the state logic for transferring between major states should happen in
-        here. That way this function can just be run every loop to reevaluate what state
-        the user should be in."""
+        # All of the state logic for transferring between major states should happen in
+        # here. That way this function can just be run every loop to reevaluate what state
+        # the user should be in.
         if self.world == False and self.battle:
             self.state.current = 'battle'
         elif self.world and self.battle == False:
@@ -171,16 +159,17 @@ class Control(object):
                 self.handle_inputs(event)
 
     def verify_input(self):
-        """We determine if input is allowed by adding 1 to allowed each time a State()
-        has input=True. If allowed is 1 or more then input is allowed. If either
-        Display.state.input or Control.state.input is False then we override all of the
-        others."""
+        # We determine if input is allowed by adding 1 to allowed each time a State()
+        # has input=True. If allowed is 1 or more then input is allowed. If either
+        # Display.state.input or Control.state.input is False then we override all of the
+        # others.
         allowed = 0
+        
         for x in range(0, len(self.display.displays)):
-            """This can give KeyError because there are inactive displays that are setup but
-            dont exist."""
+            # This can give KeyError because there are inactive displays that are setup but
+            # dont exist.
             try:
-                """To avoid an error, we need to set component here... No idea why? [BUG]"""
+                # To avoid an error, we need to set component here... No idea why? [BUG]
                 component = self.display.displays[self.display.display_keys[x]]
                 if component.state.input:
                     allowed += 1
@@ -190,7 +179,7 @@ class Control(object):
             except KeyError:
                 allowed += 0
 
-        """We have all the information, we tell the master Control() whether to allow inputs."""
+        # We have all the information, we tell the master Control() whether to allow inputs.
         if allowed >= 1:
             self.state.input = True
         else:
@@ -213,10 +202,11 @@ class Control(object):
 
     def handle_inputs(self, event):
         if self.verify_input():
-            """This decides whether or not a Player() is trying to move in a certain direction.
-            Movement is handled by polling in the World()."""
+            #This decides whether or not a Player() is trying to move in a certain direction.
+            # Movement is handled by polling in the World()."""
             if self.state.current == 'world':
-                """Keys are being pressed"""
+                
+                # Keys are being pressed
                 if event.type == KEYDOWN:
                     being_pressed = True
                     if event.key in self.pg_dir_keys:
@@ -225,7 +215,7 @@ class Control(object):
                                 direction = self.pg_dir_keys[key]
                                 self.update_direction(event, direction, being_pressed)
 
-                    """Keys need antidepressants"""
+                # Keys need antidepressants
                 elif event.type == KEYUP:
                     being_pressed = False
                     if event.key in self.pg_dir_keys:
@@ -234,7 +224,7 @@ class Control(object):
                                 direction = self.pg_dir_keys[key]
                                 self.update_direction(event, direction, being_pressed)
 
-                        """Non-directional key depresses"""
+                    # Non-directional key depresses
                     if event.key in self.pg_qwer_keys:
                         for key in self.pg_qwer_keys:
                             if key == event.key:
@@ -242,106 +232,25 @@ class Control(object):
                                 btn_num  = self.pg_qwer_keys[self.pg_qwer_keys[key]]
                                 self.update_qwer(event, btn_name, btn_num)
 
+                #
+                #
+                #
+                # CONTROL SNIPPET GOES HERE!!!
+                #
+                #
+                #
 
-
-                                
-
-            """
-            # Battle movement. If allowed, allow the user to move around the menu.
-            elif state == 'battle':
-                if self.allow_input:
-                    if event.type == KEYUP:
-                        # Cursor movements through the menu in a battle.
-                        if event.key == pygame.K_LEFT:
-                            self.display.battle.menu.move_cursor('left')
-                        elif event.key == pygame.K_UP:
-                            self.display.battle.menu.move_cursor('up')
-                        elif event.key == pygame.K_RIGHT:
-                            self.display.battle.menu.move_cursor('right')
-                        elif event.key == pygame.K_DOWN:
-                            self.display.battle.menu.move_cursor('down')
-
-                        # Pressing Q in a battle
-                        elif event.key == pygame.K_q:
-                            if self.battle_obj.in_menu:
-                                self.battle_obj.state_continue('accept')
-                            elif self.battle_obj.in_intro:
-                                self.battle_obj.state_continue('accept')
-                            elif self.battle_obj.in_exit:
-                                self.battle_obj.state_continue('accept')
-                                self.battle = False
-                                self.overworld = True
-
-                        elif event.key == pygame.K_e:
-                            self.message(self.state)
-
-                        # Pressing R in a battle
-                        elif event.key == pygame.K_r:
-                            if self.battle_obj.in_menu:
-                                self.battle_obj.state_continue('decline')
-                            elif self.battle_obj.in_intro:
-                                self.battle_obj.state_continue('decline')
-                            elif self.battle_obj.in_exit:
-                                 self.battle_obj.state_continue('decline')
-
-            #
-            #
-
-            #
-            # THIS IS THE ONLY ONE THAT'S RERFERENCING RIGHT.
-
-            #
-            #
-            #
             
-            # User button selection and things that don't require a state.
-            if event.type == KEYUP:
-                if event.key == pygame.K_q:
-                    self.display.displays['qwer']['q'].state = 1
-                    self.display.displays['qwer']['q'].active = False
-                elif event.key == pygame.K_w:
-                    self.display.displays['qwer']['w'].state = 1
-                    self.display.displays['qwer']['w'].active = False
-                elif event.key == pygame.K_e:
-                    self.display.displays['qwer']['e'].state = 1
-                    self.display.displays['qwer']['e'].active = False
-                elif event.key == pygame.K_r:
-                    self.display.displays['qwer']['r'].state = 1
-                    self.display.displays['qwer']['r'].active = False
-
-            #
-            #
-            #
-            #
-            #
-
-            if event.type == KEYDOWN:
-                if event.key == pygame.K_q:
-                    self.display.btns['q'].state = 1
-                    self.display.btns['q'].active = True
-                elif event.key == pygame.K_w:
-                    self.display.btns['w'].state = 1
-                    self.display.btns['w'].active = True
-                elif event.key == pygame.K_e:
-                    self.display.btns['e'].state = 1
-                    self.display.btns['e'].active = True
-                elif event.key == pygame.K_r:
-                    self.display.btns['r'].state = 1
-                    self.display.btns['r'].active = True
-
-            """
-    # -------------------------------------- --------------------------------------
     # World() Player() movements
-    # -------------------------------------- --------------------------------------
     def world_movement(self):
-        """If the button was pressed it will add 1. total is the sum of directions."""
+        # If the button was pressed it will add 1. total is the sum of directions.
         total = (self.direction_states['left'] + self.direction_states['right'] +
                  self.direction_states['up'] + self.direction_states['down'])
 
 
-        """We want to override movement if there are 3 directional inputs
-        We allow movement with 2 directions but we slow the movement. This should be done
-        using vectors... For now just reducing the speed with the multi True/False flag."""
+        # We want to override movement if there are 3 directional inputs
+        # We allow movement with 2 directions but we slow the movement. This should be done
+        # using vectors... For now just reducing the speed with the multi True/False flag.
         if total >= 3:
             override = True
         if total == 2:
@@ -363,8 +272,8 @@ class Control(object):
                 self.move_player(key, self.directions[key], multi)
 
     def move_player(self, key, direction, multi):
-        """If the direction_state is pressed, move the player in that direction, accounting
-        for multi-directional (diagonal) movement with the multi flag."""
+        # If the direction_state is pressed, move the player in that direction, accounting
+        # for multi-directional (diagonal) movement with the multi flag.
         if self.direction_states[key]:
             self.display.player.move(direction, multi)
 
@@ -372,9 +281,7 @@ class Control(object):
         for x in range(0, 2):
             self.display.displays['world'].change_color(x, self.qwer_color_mod[btn_num][x])
 
-    # -------------------------------------- --------------------------------------
     # World() engagement functionality
-    # -------------------------------------- --------------------------------------
     def start_battle(self):
         self.world = False
         self.battle = True
@@ -392,7 +299,7 @@ class Control(object):
             #self.display.world.state.show = True
         
     def random_engage(self):
-        """Decide whether or not an engage should occur based on Player movement."""
+        # Decide whether or not an engage should occur based on Player movement.
         self.battle_chance_mod = random.randint(0, self.battle_chance_mod)
         self.battle_chance += self.battle_chance_mod
         roll = random.randint(0, self.battle_chance_max)
@@ -413,13 +320,11 @@ class Control(object):
             self.battle_chance_mod = mod
             self.battle_chance_max = chance_max
 
-    # -------------------------------------- -------------------------------------- #
     # Miscellaneous functions
-    # -------------------------------------- -------------------------------------- #
     def debug_event(self, event):
-        """If debugging for the mouse (or any other type of event) is needed, we print out
-        the information here. Other types of events should be added here if they are in need
-        of debugging in an effort to keep the program clean."""
+        # If debugging for the mouse (or any other type of event) is needed, we print out
+        # the information here. Other types of events should be added here if they are in need
+        # of debugging in an effort to keep the program clean.
         if self.debug == 'high':
             if   event.type == pygame.MOUSEMOTION: 
                 print("| debug=high | mouse at (%d, %d) |" % (event.pos))

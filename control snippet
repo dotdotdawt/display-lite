@@ -1,0 +1,87 @@
+
+                                
+
+            """
+            # Battle movement. If allowed, allow the user to move around the menu.
+            elif state == 'battle':
+                if self.allow_input:
+                    if event.type == KEYUP:
+                        # Cursor movements through the menu in a battle.
+                        if event.key == pygame.K_LEFT:
+                            self.display.battle.menu.move_cursor('left')
+                        elif event.key == pygame.K_UP:
+                            self.display.battle.menu.move_cursor('up')
+                        elif event.key == pygame.K_RIGHT:
+                            self.display.battle.menu.move_cursor('right')
+                        elif event.key == pygame.K_DOWN:
+                            self.display.battle.menu.move_cursor('down')
+
+                        # Pressing Q in a battle
+                        elif event.key == pygame.K_q:
+                            if self.battle_obj.in_menu:
+                                self.battle_obj.state_continue('accept')
+                            elif self.battle_obj.in_intro:
+                                self.battle_obj.state_continue('accept')
+                            elif self.battle_obj.in_exit:
+                                self.battle_obj.state_continue('accept')
+                                self.battle = False
+                                self.overworld = True
+
+                        elif event.key == pygame.K_e:
+                            self.message(self.state)
+
+                        # Pressing R in a battle
+                        elif event.key == pygame.K_r:
+                            if self.battle_obj.in_menu:
+                                self.battle_obj.state_continue('decline')
+                            elif self.battle_obj.in_intro:
+                                self.battle_obj.state_continue('decline')
+                            elif self.battle_obj.in_exit:
+                                 self.battle_obj.state_continue('decline')
+
+            #
+            #
+
+            #
+            # THIS IS THE ONLY ONE THAT'S RERFERENCING RIGHT.
+
+            #
+            #
+            #
+            
+            # User button selection and things that don't require a state.
+            if event.type == KEYUP:
+                if event.key == pygame.K_q:
+                    self.display.displays['qwer']['q'].state = 1
+                    self.display.displays['qwer']['q'].active = False
+                elif event.key == pygame.K_w:
+                    self.display.displays['qwer']['w'].state = 1
+                    self.display.displays['qwer']['w'].active = False
+                elif event.key == pygame.K_e:
+                    self.display.displays['qwer']['e'].state = 1
+                    self.display.displays['qwer']['e'].active = False
+                elif event.key == pygame.K_r:
+                    self.display.displays['qwer']['r'].state = 1
+                    self.display.displays['qwer']['r'].active = False
+
+            #
+            #
+            #
+            #
+            #
+
+            if event.type == KEYDOWN:
+                if event.key == pygame.K_q:
+                    self.display.btns['q'].state = 1
+                    self.display.btns['q'].active = True
+                elif event.key == pygame.K_w:
+                    self.display.btns['w'].state = 1
+                    self.display.btns['w'].active = True
+                elif event.key == pygame.K_e:
+                    self.display.btns['e'].state = 1
+                    self.display.btns['e'].active = True
+                elif event.key == pygame.K_r:
+                    self.display.btns['r'].state = 1
+                    self.display.btns['r'].active = True
+
+            """

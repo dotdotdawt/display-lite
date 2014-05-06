@@ -3,7 +3,7 @@ main.py
 
 Last updated:
 May
-2
+5
 2014 
 """
 
@@ -14,14 +14,10 @@ import control
 
 # -------------------------------------- --------------------------------------
 def main():
-    
-    starting_state = 'world'
-    debug_level = None
-    #debug_level = 'high'
 
     intialization_settings = {
-        'state': starting_state,
-        'debug': debug_level
+        'state': 'world',
+        'debug': None
         }
     
     CONTROL = control.Control(intialization_settings)
